@@ -12,6 +12,8 @@ FILE CONTENENTE GLI STEP SEGUITI PER LA CREAZIONE DEL FRONTEND, per imparare e r
   - vite.config.js: file di configurazione di Vite (es. dice di usare React, modifica porta)
   - eslint.config.js: file di configurazione di ESLint (linter)
 
+- Installato react-router-dom per navigare tra pagine (React è single page application)
+
 - Sviluppata app per gestire l'interfaccia e le chiamate al backend, avviata con npm run dev
 
 (per chiamate http al backend: npm install axios)
