@@ -6,13 +6,13 @@ FILE CONTENENTE GLI STEP SEGUITI PER LA CREAZIONE DEL FRONTEND, per imparare e r
   - npx: esegue un pacchetto senza installarlo (un po' come python -m venv venv) ->
     scarica temporaneamente create-vite e lo esegue e basta, serve solo una volta
     per creare il progetto
-- (Eseguiti automaticamente col comando precedente: npm install, npm run dev)
+(- Eseguiti automaticamente col comando precedente: npm install, npm run dev)
 
 - Ripulita la cartella dai vari file creati, lasciati i necessari
   - vite.config.js: file di configurazione di Vite (es. dice di usare React, modifica porta)
   - eslint.config.js: file di configurazione di ESLint (linter)
 
-- Sviluppata app, avviata con npm run dev
+- Sviluppata app per gestire l'interfaccia e le chiamate al backend, avviata con npm run dev
 
 (per chiamate http al backend: npm install axios)
 (per permettere comunicazione tra porte diverse: pip install flask-cors)

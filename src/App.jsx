@@ -3,7 +3,7 @@ import "./App.css"
 function App() {
   return (
     <div className="app">
-      <h1>Pixel Grid</h1>
+      <h1>Griglia collaborativa</h1>
     </div>
   )
 }
