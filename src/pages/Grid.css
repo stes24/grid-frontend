@@ -1,8 +1,23 @@
 .grid {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-  gap: 1.5rem;
-  font-size: 30px;
+}
+
+.grid-row {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Attenzione a .button in index.css */
+.pixel {
+  background: #fff;
+  border: 1px solid #999;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  transition: filter 0.1s ease;
+}
+
+.pixel:hover {
+  filter: brightness(0.85);
 }
