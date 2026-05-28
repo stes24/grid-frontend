@@ -1,36 +1,36 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "./Grid.css"
 
-const NUM_ROWS = 10
-
-function Pixel({ id }) {
+function Pixel({ coords }) {
   return (
-    <button className="pixel">{id}</button>
+    <button className="pixel">{coords}</button>
   )
 }
 
 function Grid() {
-  // Hook di react-router-dom, ritorna funzione che fa navigare nel browser
-  const navigate = useNavigate()
+  const navigate = useNavigate() // Hook di react-router-dom, ritorna funzione che fa navigare nel browser
+  const [pixels, setPixels] = useState([])
 
   useEffect(() => {
     fetch("http://localhost:5000/pixels")
-      .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then(response => response.json())
+      .then(data => setPixels(data))
   }, []) // L'array vuoto evita di farlo ripetere a ogni render
 
-  // La chiave dei pixel è i+1 a causa del serial nel db che parte da 1
+  // Ricava dimensioni della griglia dai valori massimi di riga e colonna nel db
+  const numRows = pixels.length > 0 ? Math.max(...pixels.map(p => p.pixel_row)) + 1 : 0
+  const numCols = pixels.length > 0 ? Math.max(...pixels.map(p => p.pixel_col)) + 1 : 0
+
   return (
     <div className="page">
 
       <div className="grid">
-        {[...Array(NUM_ROWS).keys()].map(row => (
+        {[...Array(numRows).keys()].map(row => (
           <div key={row} className="grid-row">
-            {[...Array(NUM_ROWS).keys()].map(column => {
-              const i = row * NUM_ROWS + column + 1
-              return <Pixel key={i} id={i} />
-            })}
+            {[...Array(numCols).keys()].map(col =>
+              <Pixel key={`${row},${col}`} coords={`${row},${col}`} />
+            )}
           </div>
         ))}
       </div>
