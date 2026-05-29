@@ -2,9 +2,11 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "./Grid.css"
 
-function Pixel({ coords, color }) {
+function Pixel({ coords, color, onPixelClick }) {
   return (
-    <button className="pixel" style={{ backgroundColor: color }}>{coords}</button>
+    <button className="pixel" style={{ backgroundColor: color }} onClick={onPixelClick}>
+      {coords}
+    </button>
   )
 }
 
@@ -15,6 +17,7 @@ function Grid() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.debug("Caricamento dati...")
     fetch("http://localhost:5000/pixels")
       .then(response => response.json())
       .then(data => {
@@ -30,12 +33,33 @@ function Grid() {
         })
         setPixels(pixelMap)
         setLoading(false)
+        console.debug("Stati inizializzati")
       })
   }, []) // L'array vuoto evita di farlo ripetere a ogni render
 
   // Ritorna subito se sta ancora caricando i dati
   if (loading) {
     return <div className="page"><p>Caricamento...</p></div>
+  }
+
+  // Esempio di aggiornamento con PUT
+  function handleClick(row, col) {
+    console.debug("Cliccato pixel", row, col)
+    fetch(`http://localhost:5000/pixels/${row},${col}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ color: "red" })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Invece di sostituire direttamente lo stato con un oggetto, usi una arrow function
+        // per prendere lo stato attuale e farci delle operazioni sopra
+        setPixels(prev => ({
+          ...prev,                      // Copia i pixel già esistenti
+          [computeHash(row, col)]: data // Sovrascrivi il pixel cliccato
+        }))
+        console.debug("Aggiornato pixel:", data)
+      })
   }
 
   return (
@@ -47,7 +71,7 @@ function Grid() {
             {[...Array(gridSize.numCols).keys()].map(col => {
               const coords = computeHash(row, col)
               const color = pixels[coords]?.color
-              return <Pixel key={coords} coords={coords} color={color} />
+              return <Pixel key={coords} coords={coords} color={color} onPixelClick={() => handleClick(row, col)} />
             })}
           </div>
         ))}
