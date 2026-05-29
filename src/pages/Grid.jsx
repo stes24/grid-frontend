@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { io } from "socket.io-client"
 import "./Grid.css"
+
+// Il client si connette all'URL base del server
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 function Pixel({ coords, color, onPixelClick }) {
   return (
@@ -16,8 +20,30 @@ function Grid() {
   const [gridSize, setGridSize] = useState({ numRows: 0, numCols: 0 })
   const [loading, setLoading] = useState(true)
 
-  const BACKEND_URL = `${import.meta.env.VITE_BACKEND_URL}/pixels`
+  // Endpoint per le chiamate API
+  const BACKEND_URL = `${BACKEND_BASE_URL}/pixels`
 
+  // Connessione WebSocket
+  useEffect(() => {
+    const socket = io(BACKEND_BASE_URL)
+
+    socket.on("connect", () => {
+      console.debug(`ID ${socket.id} - Connesso al server`)
+    })
+    socket.on("message", (msg) => {
+      console.debug("Messaggio dal server:", msg)
+    })
+    socket.on("disconnect", () => {
+      console.debug("WebSocket disconnesso")
+    })
+
+    return () => { // Disconnessione
+      console.debug("Disconnessione...")
+      socket.disconnect()
+    }
+  }, [])
+
+  // Caricamento iniziale dei pixel
   useEffect(() => {
     console.debug("Caricamento dati...")
     fetch(BACKEND_URL)
