@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { io } from "socket.io-client"
 import "./Grid.css"
@@ -16,6 +16,7 @@ function Pixel({ coords, color, onPixelClick }) {
 
 function Grid() {
   const navigate = useNavigate() // Hook di react-router-dom, ritorna funzione che fa navigare nel browser
+  const socketRef = useRef(null) // Persistente tra render e se cambia non attiva un rerender
   const [pixels, setPixels] = useState({})
   const [gridSize, setGridSize] = useState({ numRows: 0, numCols: 0 })
   const [loading, setLoading] = useState(true)
@@ -26,6 +27,7 @@ function Grid() {
   // Connessione WebSocket
   useEffect(() => {
     const socket = io(BACKEND_BASE_URL)
+    socketRef.current = socket
 
     socket.on("connect", () => {
       console.debug(`ID ${socket.id} - Connesso al server`)
@@ -35,6 +37,13 @@ function Grid() {
     })
     socket.on("disconnect", () => {
       console.debug("WebSocket disconnesso")
+    })
+    socket.on("update_pixel", (data) => {
+      setPixels(prev => ({
+        ...prev,                                        // Copia i pixel già esistenti
+        [computeHash(data.pixel_row, data.pixel_col)]: data // Sovrascrivi il pixel cliccato
+      }))
+      console.debug("Pixel aggiornato:", data)
     })
 
     return () => { // Disconnessione
@@ -71,7 +80,7 @@ function Grid() {
   }
 
   // Esempio di aggiornamento con PUT
-  function handleClick(row, col) {
+  /* function handleClick(row, col) {
     console.debug("Cliccato pixel", row, col)
     fetch(`${BACKEND_URL}/${row},${col}`, {
       method: "PUT",
@@ -88,6 +97,14 @@ function Grid() {
         }))
         console.debug("Aggiornato pixel:", data)
       })
+  } */
+
+  function handleClick(row, col) {
+    console.debug("Cliccato pixel", row, col)
+    const socket = socketRef.current
+    if (!socket) return
+
+    socket.emit("update_pixel", { "pixel_row": row, "pixel_col": col, "color": "blue" })
   }
 
   return (
