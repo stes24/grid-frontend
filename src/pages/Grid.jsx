@@ -16,9 +16,11 @@ function Grid() {
   const [gridSize, setGridSize] = useState({ numRows: 0, numCols: 0 })
   const [loading, setLoading] = useState(true)
 
+  const BACKEND_URL = `${import.meta.env.VITE_BACKEND_URL}/pixels`
+
   useEffect(() => {
     console.debug("Caricamento dati...")
-    fetch("http://localhost:5000/pixels")
+    fetch(BACKEND_URL)
       .then(response => response.json())
       .then(data => {
         // Crea mappa che usa (r,c) come hash, contiene dati tipo 0,0: {color: "#FFFFFF", "pixel_col": 0, "pixel_row": 0}
@@ -45,7 +47,7 @@ function Grid() {
   // Esempio di aggiornamento con PUT
   function handleClick(row, col) {
     console.debug("Cliccato pixel", row, col)
-    fetch(`http://localhost:5000/pixels/${row},${col}`, {
+    fetch(`${BACKEND_URL}/${row},${col}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ color: "red" })
